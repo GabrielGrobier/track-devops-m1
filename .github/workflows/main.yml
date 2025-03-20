@@ -22,11 +22,7 @@
           chmod 600 ~/.ssh/known_hosts
 
 
-      - name: Crear carpeta de proyecto en el servidor
-        run: | 
-          ssh -i /.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }} << 'EOF'
-          mkdir -p /home/ubuntu/proyecto
-          EOF
+
 
       - name: Copiar archivos al servidor
         run: |
