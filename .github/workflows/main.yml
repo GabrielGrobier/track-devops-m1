@@ -1,41 +1,41 @@
-name: server-web-django
-on:
-  push:
-#    branches:
-#      - master
-  pull_request:
-    branches:
-      - main
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Obtener Codigo 
-      uses: actions/checkout@v2
+  name: server-web-django
+  on:
+    push:
+  #    branches:
+  #      - master
+    pull_request:
+      branches:
+        - main
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Obtener Codigo 
+        uses: actions/checkout@v2
 
-    - name: agregar llave ssh 
-      run: | 
-        mkdir -p ~/.ssh/
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-        chmod 600 ~/.ssh/known_hosts
+      - name: agregar llave ssh 
+        run: | 
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
 
-    - name: Crear carpeta de proyecto en el servidor
-      run: | 
-        ssh -i /.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }} << 'EOF'
-        mkdir -p /home/ubuntu/proyecto
-        EOF
+      - name: Crear carpeta de proyecto en el servidor
+        run: | 
+          ssh -i /.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }} << 'EOF'
+          mkdir -p /home/ubuntu/proyecto
+          EOF
 
-    - name: Copiar archivos al servidor
-      run: |
-        rsync -avz --delete --exclude '.ssh/' -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" ./ ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }}:/home/ubuntu/proyecto
+      - name: Copiar archivos al servidor
+        run: |
+          rsync -avz --delete --exclude '.ssh/' -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" ./ ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }}:/home/ubuntu/proyecto
 
-    - name: ejecutar comandos en el servidor levantar docker 
-      run: | 
-        ssh -i /.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }} << 'EOF'
-        cd /home/ubuntu/proyecto/
-        docker compose down
-        docker compose up -d --build
-        EOF
+      - name: ejecutar comandos en el servidor levantar docker 
+        run: | 
+          ssh -i /.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }} << 'EOF'
+          cd /home/ubuntu/proyecto/
+          docker compose down
+          docker compose up -d --build
+          EOF
