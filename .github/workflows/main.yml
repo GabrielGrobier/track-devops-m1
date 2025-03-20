@@ -10,10 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Obtener Codigo 
+    - name: Obtener Código
       uses: actions/checkout@v2
 
-    - name: agregar llave ssh 
+    - name: Agregar llave SSH
       run: | 
         mkdir -p ~/.ssh/
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
@@ -31,7 +31,7 @@ jobs:
       run: |
         rsync -avz --delete --exclude '.ssh/' -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" ./ ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }}:/home/ubuntu/proyecto
 
-    - name: ejecutar comandos en el servidor levantar docker 
+    - name: Ejecutar comandos en el servidor para levantar Docker
       run: | 
         ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.IP_PUBLICA }} << 'EOF'
         cd /home/ubuntu/proyecto/
